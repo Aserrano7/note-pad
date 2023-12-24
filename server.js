@@ -48,6 +48,22 @@ app.post("/api/notes", (req, res) => {
   });
 });
 
+app.delete("/api/notes/:id", (req, res) => {
+  const deleteId = JSON.parse(req.params.id);
+  
+  fs.readFile(path.join(__dirname, "./db/db.json"), "utf8", (err, data) => {
+    if (err) return console.log(err);
+
+    let notes = JSON.parse(data);
+    notes = notes.filter(note => note.id !== deleteId);
+
+    fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(notes), (err) => {
+      if (err) return console.log(err);
+      res.json(notes);
+    });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`App listening on PORT ${PORT}`)
 });
