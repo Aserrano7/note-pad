@@ -24,6 +24,30 @@ app.get("/api/notes", (req, res) => {
   });
 });
 
+app.post("/api/notes", (req, res) => {
+  const { title, text } = req.body;
+  
+  fs.readFile(path.join(__dirname, "./db/db.json"), "utf8", (err, data) => {
+    if (err) return console.log(err);
+
+    const notes = JSON.parse(data);
+    let newId;
+    if (notes.length > 0) {
+      newId = notes[notes.length - 1].id + 1;
+    } else {
+      newId = 10;
+    }
+    
+    const newNote = { title, text, id: newId };
+    const updatedNotes = [...notes, newNote];
+
+    fs.writeFile(path.join(__dirname, "./db/db.json"), JSON.stringify(updatedNotes), (err) => {
+      if (err) return console.log(err);
+      res.json(updatedNotes);
+    });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`App listening on PORT ${PORT}`)
 });
